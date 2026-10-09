@@ -20,7 +20,7 @@
     };
   </script>
 
-  <!-- 组件级公共样式：表单控件 / 按钮 / 表格 / 区块标题 -->
+  <!-- 组件级公共样式：表单控件 / 按钮 / 表格 / 区块标题 / Tab 页签 -->
   <style type="text/tailwindcss">
     /* ========== 区块卡片与标题 ========== */
     .card        { @apply bg-white rounded-md border border-slate-200 px-5 py-4; }
@@ -66,10 +66,15 @@
     .data-table th .th-sub { @apply block text-[11px] font-normal text-slate-400 leading-3 mt-0.5; }
     .data-table td { @apply border-b border-slate-100 px-2 py-1.5 align-middle; }
 
-    /* ========== Tab 页签（顶部） ========== */
+    /* ========== Tab 页签（顶部多页签栏） ========== */
     .app-tab     { @apply inline-flex items-center gap-1.5 h-9 px-4 text-[13px] rounded-t-md bg-slate-200/70 text-slate-500 cursor-pointer transition select-none; }
     .app-tab.is-active { @apply bg-white text-primary font-medium shadow-[0_-1px_2px_rgba(0,0,0,0.04)]; }
     .app-tab .tab-close { @apply w-4 h-4 leading-4 text-center rounded text-slate-400 hover:bg-slate-300/70 hover:text-slate-600; }
+
+    /* ========== 下划线式 Tab（标准信息区：船舶信息 / 单船标准 / 单岗标准） ========== */
+    .subtab      { @apply inline-flex items-center h-9 px-3 text-[14px] text-slate-500 border-b-2 border-transparent -mb-px cursor-pointer transition select-none; }
+    .subtab:hover { @apply text-primary; }
+    .subtab.is-active { @apply text-slate-800 font-medium border-primary; }
   </style>
 </head>
 
@@ -317,125 +322,165 @@
         </div>
       </section>
 
-      <!-- ========== 区块三：标准信息（左右分栏） ========== -->
+      <!-- ========== 区块三：标准信息（上：标准名称表单；下：左 船舶信息表格 + 右 单船/单岗标准 Tab 页） ========== -->
       <section id="section-standard-info" class="card" aria-labelledby="titleStandardInfo">
         <h2 id="titleStandardInfo" class="section-title">标准信息</h2>
-        <p class="section-desc">左侧维护标准名称与协议方式，右侧按协议方式联动展示「单船协议标准」或「单岗协议标准」。</p>
+        <p class="section-desc">上方维护标准名称与协议方式；下方左侧为船舶信息，右侧「单船标准 / 单岗标准」以 Tab 页切换维护（与协议方式联动）。</p>
 
-        <div class="mt-4 flex flex-col lg:flex-row gap-4 items-start">
+        <!-- ◆ 标准名称（横向表单区） -->
+        <div class="form-grid mt-4">
+          <div class="form-item">
+            <label for="standardName" class="form-label"><i class="req">*</i>标准名称：</label>
+            <input type="text" id="standardName" name="standardName" class="form-input" required
+                   value="2026年劳务单船协议标准" placeholder="请输入标准名称" />
+          </div>
 
-          <!-- ◆ 左侧栏：标准名称（表单区） -->
-          <aside id="panel-standard-name" class="w-full lg:w-[360px] shrink-0 border border-slate-200 rounded-md p-4 bg-slate-50/40">
-            <h3 class="text-[14px] font-semibold text-slate-700 mb-3">标准名称</h3>
+          <!-- 协议方式：下拉框，联动右侧 Tab 页 -->
+          <div class="form-item">
+            <label for="agreementType" class="form-label"><i class="req">*</i>协议方式：</label>
+            <select id="agreementType" name="agreementType" class="form-input" required>
+              <option value="single-vessel" selected>单船协议标准</option>
+              <option value="single-post">单岗协议标准</option>
+            </select>
+          </div>
 
-            <div class="space-y-3">
-              <div class="form-item grid-cols-[88px_minmax(0,1fr)]">
-                <label for="standardName" class="form-label"><i class="req">*</i>标准名称：</label>
-                <input type="text" id="standardName" name="standardName" class="form-input" required
-                       value="2026年劳务单船协议标准" placeholder="请输入标准名称" />
-              </div>
-
-              <!-- 协议方式：单选，联动右侧标准面板 -->
-              <div class="form-item grid-cols-[88px_minmax(0,1fr)]">
-                <span class="form-label"><i class="req">*</i>协议方式：</span>
-                <div id="agreementTypeGroup" class="flex gap-4 pt-1" role="radiogroup" aria-label="协议方式">
-                  <label class="inline-flex items-center gap-1.5 cursor-pointer">
-                    <input type="radio" name="agreementType" value="single-vessel" class="accent-primary" checked />
-                    <span class="text-[13px]">单船协议标准</span>
-                  </label>
-                  <label class="inline-flex items-center gap-1.5 cursor-pointer">
-                    <input type="radio" name="agreementType" value="single-post" class="accent-primary" />
-                    <span class="text-[13px]">单岗协议标准</span>
-                  </label>
-                </div>
-              </div>
-
-              <!-- 香港公司项目：下拉多选 -->
-              <div class="form-item grid-cols-[88px_minmax(0,1fr)] items-start">
-                <label class="form-label pt-1.5">香港公司项目：</label>
-                <div id="hkProjectSelect" class="relative min-w-0">
-                  <button type="button" id="hkProjectToggle" class="form-input text-left flex items-center justify-between gap-1">
-                    <span id="hkProjectText" class="truncate">基薪、路途薪</span>
-                    <span class="text-slate-400 text-xs shrink-0">▾</span>
-                  </button>
-                  <!-- 汇总选中值，便于后端对接 -->
-                  <input type="hidden" id="hkProjects" name="hkProjects" value="基薪,路途薪" />
-                  <div id="hkProjectPanel" class="hidden absolute z-20 mt-1 w-full max-h-56 overflow-auto bg-white border border-slate-200 rounded-md shadow-lg p-2">
-                    <label class="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-slate-50 cursor-pointer text-[13px]">
-                      <input type="checkbox" class="hk-project-check accent-primary" value="基薪" checked /> 基薪
-                    </label>
-                    <label class="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-slate-50 cursor-pointer text-[13px]">
-                      <input type="checkbox" class="hk-project-check accent-primary" value="路途薪" checked /> 路途薪
-                    </label>
-                    <label class="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-slate-50 cursor-pointer text-[13px]">
-                      <input type="checkbox" class="hk-project-check accent-primary" value="离船考核奖" /> 离船考核奖
-                    </label>
-                    <label class="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-slate-50 cursor-pointer text-[13px]">
-                      <input type="checkbox" class="hk-project-check accent-primary" value="超期补贴" /> 超期补贴
-                    </label>
-                    <label class="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-slate-50 cursor-pointer text-[13px]">
-                      <input type="checkbox" class="hk-project-check accent-primary" value="供方老手返船奖" /> 供方老手返船奖
-                    </label>
-                    <label class="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-slate-50 cursor-pointer text-[13px]">
-                      <input type="checkbox" class="hk-project-check accent-primary" value="代理费" /> 代理费
-                    </label>
-                    <label class="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-slate-50 cursor-pointer text-[13px]">
-                      <input type="checkbox" class="hk-project-check accent-primary" value="管理费" /> 管理费
-                    </label>
-                    <label class="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-slate-50 cursor-pointer text-[13px]">
-                      <input type="checkbox" class="hk-project-check accent-primary" value="集结包干费" /> 集结包干费
-                    </label>
-                    <label class="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-slate-50 cursor-pointer text-[13px]">
-                      <input type="checkbox" class="hk-project-check accent-primary" value="制服费" /> 制服费
-                    </label>
-                    <label class="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-slate-50 cursor-pointer text-[13px]">
-                      <input type="checkbox" class="hk-project-check accent-primary" value="培训费" /> 培训费
-                    </label>
-                    <label class="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-slate-50 cursor-pointer text-[13px]">
-                      <input type="checkbox" class="hk-project-check accent-primary" value="伙食费" /> 伙食费
-                    </label>
-                    <div class="flex justify-between items-center pt-2 mt-1 border-t border-slate-100">
-                      <button type="button" id="hkProjectCheckAll" class="btn-link text-xs">全选</button>
-                      <button type="button" id="hkProjectClear" class="btn-link text-xs">清空</button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div class="form-item grid-cols-[88px_minmax(0,1fr)] items-start">
-                <label for="standardRemark" class="form-label pt-1.5">备注：</label>
-                <textarea id="standardRemark" name="standardRemark" rows="4" class="form-input"
-                          placeholder="请输入备注">适用于2026年度劳务派遣船舶。</textarea>
-              </div>
-            </div>
-          </aside>
-
-          <!-- ◆ 右侧栏：船舶信息 + 协议标准 -->
-          <div class="flex-1 min-w-0 w-full space-y-4">
-
-            <!-- 船舶信息 -->
-            <div id="panel-vessel-info" class="border border-slate-200 rounded-md p-4">
-              <h3 class="text-[14px] font-semibold text-slate-700 mb-3">船舶信息</h3>
-              <div class="form-grid">
-                <div class="form-item grid-cols-[88px_minmax(0,1fr)]">
-                  <label for="vesselName" class="form-label"><i class="req">*</i>船舶名称：</label>
-                  <div class="flex gap-2 min-w-0">
-                    <input type="text" id="vesselName" name="vesselName" class="form-input" required
-                           value="白羊座 / 金牛座" placeholder="请输入船舶名称" />
-                    <button type="button" id="btnPickVessel" class="btn-plain btn-mini shrink-0">选择</button>
-                  </div>
+          <!-- 香港公司项目：下拉多选 -->
+          <div class="form-item">
+            <label class="form-label">香港公司项目：</label>
+            <div id="hkProjectSelect" class="relative min-w-0">
+              <button type="button" id="hkProjectToggle" class="form-input text-left flex items-center justify-between gap-1">
+                <span id="hkProjectText" class="truncate">基薪、路途薪</span>
+                <span class="text-slate-400 text-xs shrink-0">▾</span>
+              </button>
+              <!-- 汇总选中值，便于后端对接 -->
+              <input type="hidden" id="hkProjects" name="hkProjects" value="基薪,路途薪" />
+              <div id="hkProjectPanel" class="hidden absolute z-20 mt-1 w-full max-h-56 overflow-auto bg-white border border-slate-200 rounded-md shadow-lg p-2">
+                <label class="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-slate-50 cursor-pointer text-[13px]">
+                  <input type="checkbox" class="hk-project-check accent-primary" value="基薪" checked /> 基薪
+                </label>
+                <label class="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-slate-50 cursor-pointer text-[13px]">
+                  <input type="checkbox" class="hk-project-check accent-primary" value="路途薪" checked /> 路途薪
+                </label>
+                <label class="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-slate-50 cursor-pointer text-[13px]">
+                  <input type="checkbox" class="hk-project-check accent-primary" value="离船考核奖" /> 离船考核奖
+                </label>
+                <label class="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-slate-50 cursor-pointer text-[13px]">
+                  <input type="checkbox" class="hk-project-check accent-primary" value="超期补贴" /> 超期补贴
+                </label>
+                <label class="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-slate-50 cursor-pointer text-[13px]">
+                  <input type="checkbox" class="hk-project-check accent-primary" value="供方老手返船奖" /> 供方老手返船奖
+                </label>
+                <label class="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-slate-50 cursor-pointer text-[13px]">
+                  <input type="checkbox" class="hk-project-check accent-primary" value="代理费" /> 代理费
+                </label>
+                <label class="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-slate-50 cursor-pointer text-[13px]">
+                  <input type="checkbox" class="hk-project-check accent-primary" value="管理费" /> 管理费
+                </label>
+                <label class="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-slate-50 cursor-pointer text-[13px]">
+                  <input type="checkbox" class="hk-project-check accent-primary" value="集结包干费" /> 集结包干费
+                </label>
+                <label class="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-slate-50 cursor-pointer text-[13px]">
+                  <input type="checkbox" class="hk-project-check accent-primary" value="制服费" /> 制服费
+                </label>
+                <label class="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-slate-50 cursor-pointer text-[13px]">
+                  <input type="checkbox" class="hk-project-check accent-primary" value="培训费" /> 培训费
+                </label>
+                <label class="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-slate-50 cursor-pointer text-[13px]">
+                  <input type="checkbox" class="hk-project-check accent-primary" value="伙食费" /> 伙食费
+                </label>
+                <div class="flex justify-between items-center pt-2 mt-1 border-t border-slate-100">
+                  <button type="button" id="hkProjectCheckAll" class="btn-link text-xs">全选</button>
+                  <button type="button" id="hkProjectClear" class="btn-link text-xs">清空</button>
                 </div>
               </div>
             </div>
+          </div>
 
-            <!-- 单船协议标准（协议方式=单船协议标准 时显示） -->
-            <div id="panel-single-vessel-standard" class="border border-slate-200 rounded-md p-4">
-              <div class="flex items-center justify-between flex-wrap gap-2">
-                <h3 class="text-[14px] font-semibold text-slate-700">单船协议标准</h3>
-                <!-- 工具栏 -->
+          <div class="form-item">
+            <label for="standardRemark" class="form-label">备注：</label>
+            <input type="text" id="standardRemark" name="standardRemark" class="form-input"
+                   value="适用于2026年度劳务派遣船舶。" placeholder="请输入备注" />
+          </div>
+        </div>
+
+        <!-- ◆ 左右分栏：左 船舶信息（表格）/ 右 单船标准·单岗标准（Tab 页） -->
+        <div class="mt-4 flex flex-col lg:flex-row gap-4 items-stretch">
+
+          <!-- 左侧：船舶信息（表格） -->
+          <div id="panel-vessel-info" class="lg:w-[42%] shrink-0 border border-slate-200 rounded-md p-4 flex flex-col">
+            <div class="flex items-end justify-between flex-wrap gap-2 border-b border-slate-200">
+              <div class="flex">
+                <span class="subtab is-active">船舶信息</span>
+              </div>
+              <!-- 工具栏 -->
+              <div class="flex items-center gap-2 pb-1.5">
+                <button type="button" class="btn-primary btn-mini" data-action="add-row" data-target="tableVesselInfo">＋ 新增</button>
+                <button type="button" class="btn-primary btn-mini" data-action="copy-row" data-target="tableVesselInfo">复制新增</button>
+                <button type="button" class="btn-danger btn-mini" data-action="remove-checked" data-target="tableVesselInfo">删除</button>
+                <button type="button" class="btn-plain btn-mini">导入</button>
+                <button type="button" class="btn-plain btn-mini">导入模板下载</button>
+                <button type="button" class="btn-plain btn-mini">导出</button>
+              </div>
+            </div>
+
+            <div class="mt-3 overflow-x-auto border border-slate-100 rounded">
+              <table id="tableVesselInfo" class="data-table min-w-[620px]">
+                <thead>
+                  <tr>
+                    <th class="w-10">选择</th>
+                    <th class="w-12">序号</th>
+                    <th>船舶代码</th>
+                    <th>船舶名称</th>
+                    <th>主结算单位</th>
+                    <th class="w-14">操作</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="text-center"><input type="radio" name="vesselRadio" class="accent-primary" checked aria-label="选择船舶" /></td>
+                    <td class="text-center row-index">1</td>
+                    <td><input type="text" class="form-input-sm w-24" value="1051927" placeholder="船舶代码" /></td>
+                    <td><input type="text" class="form-input-sm w-28" value="金牛座" placeholder="船舶名称" /></td>
+                    <td>
+                      <div class="relative">
+                        <input type="text" class="form-input-sm w-full pr-6" readonly value="天津中散船舶管理有限公司" placeholder="请选择主结算单位" />
+                        <span class="absolute right-1.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs">🔍</span>
+                      </div>
+                    </td>
+                    <td class="text-center"><button type="button" class="btn-link btn-row-del">删除</button></td>
+                  </tr>
+                  <tr>
+                    <td class="text-center"><input type="radio" name="vesselRadio" class="accent-primary" aria-label="选择船舶" /></td>
+                    <td class="text-center row-index">2</td>
+                    <td><input type="text" class="form-input-sm w-24" value="1051862" placeholder="船舶代码" /></td>
+                    <td><input type="text" class="form-input-sm w-28" value="白羊座" placeholder="船舶名称" /></td>
+                    <td>
+                      <div class="relative">
+                        <input type="text" class="form-input-sm w-full pr-6" readonly value="天津中散船舶管理有限公司" placeholder="请选择主结算单位" />
+                        <span class="absolute right-1.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs">🔍</span>
+                      </div>
+                    </td>
+                    <td class="text-center"><button type="button" class="btn-link btn-row-del">删除</button></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- 右侧：单船标准 / 单岗标准（Tab 页切换） -->
+          <div class="flex-1 min-w-0 border border-slate-200 rounded-md p-4">
+            <div id="standardTabs" class="flex items-end justify-between flex-wrap gap-2 border-b border-slate-200">
+              <div class="flex" role="tablist" aria-label="协议标准 Tab">
+                <button type="button" class="subtab is-active" role="tab" aria-selected="true" data-tab="single-vessel">单船标准</button>
+                <button type="button" class="subtab" role="tab" aria-selected="false" data-tab="single-post">单岗标准</button>
+              </div>
+            </div>
+
+            <!-- Tab 页 1：单船协议标准 -->
+            <div id="panel-single-vessel-standard" role="tabpanel">
+              <div class="flex items-center justify-end flex-wrap gap-2 mt-3">
                 <div class="flex items-center gap-2">
                   <button type="button" class="btn-primary btn-mini" data-action="add-row" data-target="tableSingleVessel">＋ 新增</button>
-                  <button type="button" class="btn-primary btn-mini" data-action="copy-row" data-target="tableSingleVessel">复制新增</button>
                   <button type="button" class="btn-danger btn-mini" data-action="remove-checked" data-target="tableSingleVessel">删除</button>
                   <button type="button" class="btn-plain btn-mini">导入</button>
                   <button type="button" class="btn-plain btn-mini">导入模板下载</button>
@@ -443,8 +488,8 @@
                 </div>
               </div>
 
-              <div class="mt-3 overflow-x-auto border border-slate-100 rounded">
-                <table id="tableSingleVessel" class="data-table min-w-[760px]">
+              <div class="mt-2 overflow-x-auto border border-slate-100 rounded">
+                <table id="tableSingleVessel" class="data-table min-w-[720px]">
                   <thead>
                     <tr>
                       <th class="w-10"><input type="checkbox" class="check-all accent-primary" aria-label="全选" /></th>
@@ -452,7 +497,7 @@
                       <th>生效日期</th>
                       <th>月度单船协议费用</th>
                       <th>备注</th>
-                      <th class="w-16">操作</th>
+                      <th class="w-14">操作</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -477,11 +522,9 @@
               </div>
             </div>
 
-            <!-- 单岗协议标准（协议方式=单岗协议标准 时显示） -->
-            <div id="panel-single-post-standard" class="border border-slate-200 rounded-md p-4 hidden">
-              <div class="flex items-center justify-between flex-wrap gap-2">
-                <h3 class="text-[14px] font-semibold text-slate-700">单岗协议标准</h3>
-                <!-- 工具栏 -->
+            <!-- Tab 页 2：单岗协议标准 -->
+            <div id="panel-single-post-standard" role="tabpanel" class="hidden">
+              <div class="flex items-center justify-end flex-wrap gap-2 mt-3">
                 <div class="flex items-center gap-2">
                   <button type="button" class="btn-primary btn-mini" data-action="add-row" data-target="tableSinglePost">＋ 新增</button>
                   <button type="button" class="btn-danger btn-mini" data-action="remove-checked" data-target="tableSinglePost">删除</button>
@@ -491,7 +534,7 @@
                 </div>
               </div>
 
-              <div class="mt-3 overflow-x-auto border border-slate-100 rounded">
+              <div class="mt-2 overflow-x-auto border border-slate-100 rounded">
                 <table id="tableSinglePost" class="data-table min-w-[2360px]">
                   <thead>
                     <tr>
@@ -513,7 +556,7 @@
                       <th>培训费</th>
                       <th>伙食费</th>
                       <th>备注</th>
-                      <th class="w-16">操作</th>
+                      <th class="w-14">操作</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -573,8 +616,8 @@
                 </table>
               </div>
             </div>
-
           </div>
+
         </div>
       </section>
 
@@ -593,9 +636,9 @@
   <script>
     /* ============================================================
      * 原型交互脚本（纯演示，无任何外部依赖）
-     * 1. 协议方式联动切换右侧标准面板
+     * 1. 「单船标准 / 单岗标准」Tab 页切换 + 协议方式下拉双向联动
      * 2. 香港公司项目下拉多选
-     * 3. 表格行新增 / 复制新增 / 删除（含勾选批量删除、全选）
+     * 3. 表格行新增 / 复制新增 / 删除（含勾选批量删除、单选删除、全选）
      * 4. 保存提交演示
      * ============================================================ */
 
@@ -607,13 +650,31 @@
       setTimeout(function () { toast.classList.add('hidden'); }, 2000);
     }
 
-    /* ---------- 1. 协议方式联动：单船 / 单岗 标准面板切换 ---------- */
-    document.querySelectorAll('input[name="agreementType"]').forEach(function (radio) {
-      radio.addEventListener('change', function () {
-        var isVessel = this.value === 'single-vessel';
-        document.getElementById('panel-single-vessel-standard').classList.toggle('hidden', !isVessel);
-        document.getElementById('panel-single-post-standard').classList.toggle('hidden', isVessel);
+    /* ---------- 1. Tab 页切换（单船标准 / 单岗标准），与协议方式下拉双向联动 ---------- */
+    var standardTabs = document.querySelectorAll('#standardTabs [data-tab]');
+
+    function activateStandardTab(key) {
+      standardTabs.forEach(function (tab) {
+        var active = tab.dataset.tab === key;
+        tab.classList.toggle('is-active', active);
+        tab.setAttribute('aria-selected', active ? 'true' : 'false');
       });
+      document.getElementById('panel-single-vessel-standard').classList.toggle('hidden', key !== 'single-vessel');
+      document.getElementById('panel-single-post-standard').classList.toggle('hidden', key !== 'single-post');
+    }
+
+    standardTabs.forEach(function (tab) {
+      tab.addEventListener('click', function () {
+        activateStandardTab(tab.dataset.tab);
+        // Tab 切换时反向同步「协议方式」下拉
+        var select = document.getElementById('agreementType');
+        if (select.value !== tab.dataset.tab) { select.value = tab.dataset.tab; }
+      });
+    });
+
+    // 「协议方式」下拉切换时联动激活对应 Tab
+    document.getElementById('agreementType').addEventListener('change', function () {
+      activateStandardTab(this.value);
     });
 
     /* ---------- 2. 香港公司项目：下拉多选 ---------- */
@@ -660,7 +721,21 @@
       });
     }
 
-    /** 单船协议标准：生成可编辑空行 */
+    /** 船舶信息：生成可编辑空行 */
+    function buildVesselInfoRow() {
+      var tr = document.createElement('tr');
+      tr.innerHTML =
+        '<td class="text-center"><input type="radio" name="vesselRadio" class="accent-primary" aria-label="选择船舶" /></td>' +
+        '<td class="text-center row-index"></td>' +
+        '<td><input type="text" class="form-input-sm w-24" placeholder="船舶代码" /></td>' +
+        '<td><input type="text" class="form-input-sm w-28" placeholder="船舶名称" /></td>' +
+        '<td><div class="relative"><input type="text" class="form-input-sm w-full pr-6" readonly placeholder="请选择主结算单位" />' +
+        '<span class="absolute right-1.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs">🔍</span></div></td>' +
+        '<td class="text-center"><button type="button" class="btn-link btn-row-del">删除</button></td>';
+      return tr;
+    }
+
+    /** 单船标准：生成可编辑空行 */
     function buildVesselRow() {
       var tr = document.createElement('tr');
       tr.innerHTML =
@@ -673,7 +748,7 @@
       return tr;
     }
 
-    /** 单岗协议标准：生成可编辑空行 */
+    /** 单岗标准：生成可编辑空行 */
     function buildPostRow() {
       var tr = document.createElement('tr');
       tr.innerHTML =
@@ -699,7 +774,7 @@
       return tr;
     }
 
-    /** 工具栏按钮事件委托：新增 / 复制新增 / 删除勾选行 */
+    /** 工具栏按钮事件委托：新增 / 复制新增 / 删除选中行 */
     document.addEventListener('click', function (e) {
       var btn = e.target.closest('[data-action]');
       if (!btn) { return; }
@@ -710,10 +785,10 @@
 
       if (action === 'add-row' || action === 'copy-row') {
         var newRow;
-        if (btn.dataset.target === 'tableSingleVessel') {
-          newRow = buildVesselRow();
-        } else {
-          newRow = buildPostRow();
+        switch (btn.dataset.target) {
+          case 'tableVesselInfo':   newRow = buildVesselInfoRow(); break;
+          case 'tableSinglePost':   newRow = buildPostRow();       break;
+          default:                  newRow = buildVesselRow();     break;
         }
         // 复制新增：带出最后一行已填写的值（原型演示）
         if (action === 'copy-row') {
@@ -731,11 +806,15 @@
       }
 
       if (action === 'remove-checked') {
-        var checked = tbody.querySelectorAll('.row-check:checked');
-        if (!checked.length) { showToast('请先勾选要删除的行'); return; }
-        checked.forEach(function (c) { c.closest('tr').remove(); });
+        // 勾选批量删除（标准表格）；船舶信息为单选（radio）删除选中行
+        var picked = Array.prototype.slice.call(tbody.querySelectorAll('.row-check:checked'));
+        if (!picked.length) {
+          picked = Array.prototype.slice.call(tbody.querySelectorAll('input[type="radio"]:checked'));
+        }
+        if (!picked.length) { showToast('请先选择要删除的行'); return; }
+        picked.forEach(function (c) { c.closest('tr').remove(); });
         renumber(tbody);
-        showToast('已删除 ' + checked.length + ' 行');
+        showToast('已删除 ' + picked.length + ' 行');
       }
     });
 
