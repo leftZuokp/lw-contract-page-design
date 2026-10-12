@@ -1,6 +1,6 @@
 # LW_CONTRACT（劳务经营合同主表）
 
-> 主键：**ID**　|　业务字段 66 个，公共字段 10 个（BaseDomain）
+> 主键：**ID**　|　业务字段 58 个，公共字段 10 个（BaseDomain）
 
 ## 索引
 
@@ -38,47 +38,39 @@
 | 23 | **RELIEVE_DATE** | DATE | Y |  | 解除日期 |
 | 24 | **DISPUTE_DATE** | DATE | Y |  | 争议日期 |
 | 25 | **DISPUTE_CASE** | VARCHAR2(1000) | Y |  | 争议情况 |
-| 26 | **SETTLE_AMOUNT** | NUMBER(18, 2) | Y |  | 合同结算额 |
-| 27 | **SETTLE_UNIT** | VARCHAR2(255) | Y |  | 结算单位 |
-| 28 | **SETTLE_CYCLE** | VARCHAR2(20) | Y |  | 结算周期(MONTH-月结 QUARTER-季结 HALF_YEAR-半年结 YEAR-年结) |
-| 29 | **CURRENCY_CODE** | VARCHAR2(20) | Y |  | 结算币种(字典 CURRENCY) |
-| 30 | **SETTLE_TYPE** | VARCHAR2(20) | Y |  | 结算类型(FIXED_30-月固定天数(30) ACTUAL-月实际天数) |
-| 31 | **PAYMENT_METHOD** | VARCHAR2(50) | Y |  | 付款方式(字典 LW_PAYMENT_METHOD) |
-| 32 | **INVOICE_TYPE** | VARCHAR2(50) | Y |  | 发票类型(字典 LW_INVOICE_TYPE) |
-| 33 | **STANDARD_NAME** | VARCHAR2(255) | Y |  | 标准名称 |
-| 34 | **AGREEMENT_TYPE** | VARCHAR2(30) | Y |  | 协议方式(SINGLE_VESSEL-单船协议标准 SINGLE_POST-单岗协议标准) |
-| 35 | **HK_PROJECT_CODES** | VARCHAR2(500) | Y |  | 香港公司项目(字典 LW_HK_PROJECT 编码，多个以英文逗号分隔) |
-| 36 | **STANDARD_REMARK** | VARCHAR2(500) | Y |  | 标准备注 |
-| 37 | **SIGNED_CREATE_BY** | VARCHAR2(64) | Y |  | 签署日期首次设置-创建人 |
-| 38 | **SIGNED_CREATE_BY_NAME** | VARCHAR2(64) | Y |  | 签署日期首次设置-创建人名称 |
-| 39 | **SIGNED_CREATE_TIME** | DATE | Y |  | 签署日期首次设置-创建时间 |
-| 40 | **SIGNED_UPDATE_BY** | VARCHAR2(64) | Y |  | 签署日期变更-更新人 |
-| 41 | **SIGNED_UPDATE_BY_NAME** | VARCHAR2(64) | Y |  | 签署日期变更-更新人名称 |
-| 42 | **SIGNED_UPDATE_TIME** | DATE | Y |  | 签署日期变更-更新时间 |
-| 43 | **EFFICIENT_CREATE_BY** | VARCHAR2(64) | Y |  | 生效日期首次设置-创建人 |
-| 44 | **EFFICIENT_CREATE_BY_NAME** | VARCHAR2(64) | Y |  | 生效日期首次设置-创建人名称 |
-| 45 | **EFFICIENT_CREATE_TIME** | DATE | Y |  | 生效日期首次设置-创建时间 |
-| 46 | **EFFICIENT_UPDATE_BY** | VARCHAR2(64) | Y |  | 生效日期变更-更新人 |
-| 47 | **EFFICIENT_UPDATE_BY_NAME** | VARCHAR2(64) | Y |  | 生效日期变更-更新人名称 |
-| 48 | **EFFICIENT_UPDATE_TIME** | DATE | Y |  | 生效日期变更-更新时间 |
-| 49 | **LIFTED_CREATE_BY** | VARCHAR2(64) | Y |  | 解除日期首次设置-创建人 |
-| 50 | **LIFTED_CREATE_BY_NAME** | VARCHAR2(64) | Y |  | 解除日期首次设置-创建人名称 |
-| 51 | **LIFTED_CREATE_TIME** | DATE | Y |  | 解除日期首次设置-创建时间 |
-| 52 | **LIFTED_UPDATE_BY** | VARCHAR2(64) | Y |  | 解除日期变更-更新人 |
-| 53 | **LIFTED_UPDATE_BY_NAME** | VARCHAR2(64) | Y |  | 解除日期变更-更新人名称 |
-| 54 | **LIFTED_UPDATE_TIME** | DATE | Y |  | 解除日期变更-更新时间 |
-| 55 | **DISPUTE_CREATE_BY** | VARCHAR2(64) | Y |  | 争议日期首次设置-创建人 |
-| 56 | **DISPUTE_CREATE_BY_NAME** | VARCHAR2(64) | Y |  | 争议日期首次设置-创建人名称 |
-| 57 | **DISPUTE_CREATE_TIME** | DATE | Y |  | 争议日期首次设置-创建时间 |
-| 58 | **DISPUTE_UPDATE_BY** | VARCHAR2(64) | Y |  | 争议日期变更-更新人 |
-| 59 | **DISPUTE_UPDATE_BY_NAME** | VARCHAR2(64) | Y |  | 争议日期变更-更新人名称 |
-| 60 | **DISPUTE_UPDATE_TIME** | DATE | Y |  | 争议日期变更-更新时间 |
-| 61 | **TERMINATION_CREATE_BY** | VARCHAR2(64) | Y |  | 终止日期首次设置-创建人 |
-| 62 | **TERMINATION_CREATE_BY_NAME** | VARCHAR2(64) | Y |  | 终止日期首次设置-创建人名称 |
-| 63 | **TERMINATION_CREATE_TIME** | DATE | Y |  | 终止日期首次设置-创建时间 |
-| 64 | **TERMINATION_UPDATE_BY** | VARCHAR2(64) | Y |  | 终止日期变更-更新人 |
-| 65 | **TERMINATION_UPDATE_BY_NAME** | VARCHAR2(64) | Y |  | 终止日期变更-更新人名称 |
-| 66 | **TERMINATION_UPDATE_TIME** | DATE | Y |  | 终止日期变更-更新时间 |
+| 26 | **SETTLE_AMOUNT** | NUMBER(18,2) | Y |  | 合同结算额 |
+| 27 | **CURRENCY_CODE** | VARCHAR2(20) | Y |  | 结算币种(字典 CURRENCY) |
+| 28 | **SETTLE_TYPE** | VARCHAR2(20) | Y |  | 结算类型(FIXED_30-月固定天数(30) ACTUAL-月实际天数) |
+| 29 | **SIGNED_CREATE_BY** | VARCHAR2(64) | Y |  | 签署日期首次设置-创建人 |
+| 30 | **SIGNED_CREATE_BY_NAME** | VARCHAR2(64) | Y |  | 签署日期首次设置-创建人名称 |
+| 31 | **SIGNED_CREATE_TIME** | DATE | Y |  | 签署日期首次设置-创建时间 |
+| 32 | **SIGNED_UPDATE_BY** | VARCHAR2(64) | Y |  | 签署日期变更-更新人 |
+| 33 | **SIGNED_UPDATE_BY_NAME** | VARCHAR2(64) | Y |  | 签署日期变更-更新人名称 |
+| 34 | **SIGNED_UPDATE_TIME** | DATE | Y |  | 签署日期变更-更新时间 |
+| 35 | **EFFICIENT_CREATE_BY** | VARCHAR2(64) | Y |  | 生效日期首次设置-创建人 |
+| 36 | **EFFICIENT_CREATE_BY_NAME** | VARCHAR2(64) | Y |  | 生效日期首次设置-创建人名称 |
+| 37 | **EFFICIENT_CREATE_TIME** | DATE | Y |  | 生效日期首次设置-创建时间 |
+| 38 | **EFFICIENT_UPDATE_BY** | VARCHAR2(64) | Y |  | 生效日期变更-更新人 |
+| 39 | **EFFICIENT_UPDATE_BY_NAME** | VARCHAR2(64) | Y |  | 生效日期变更-更新人名称 |
+| 40 | **EFFICIENT_UPDATE_TIME** | DATE | Y |  | 生效日期变更-更新时间 |
+| 41 | **LIFTED_CREATE_BY** | VARCHAR2(64) | Y |  | 解除日期首次设置-创建人 |
+| 42 | **LIFTED_CREATE_BY_NAME** | VARCHAR2(64) | Y |  | 解除日期首次设置-创建人名称 |
+| 43 | **LIFTED_CREATE_TIME** | DATE | Y |  | 解除日期首次设置-创建时间 |
+| 44 | **LIFTED_UPDATE_BY** | VARCHAR2(64) | Y |  | 解除日期变更-更新人 |
+| 45 | **LIFTED_UPDATE_BY_NAME** | VARCHAR2(64) | Y |  | 解除日期变更-更新人名称 |
+| 46 | **LIFTED_UPDATE_TIME** | DATE | Y |  | 解除日期变更-更新时间 |
+| 47 | **DISPUTE_CREATE_BY** | VARCHAR2(64) | Y |  | 争议日期首次设置-创建人 |
+| 48 | **DISPUTE_CREATE_BY_NAME** | VARCHAR2(64) | Y |  | 争议日期首次设置-创建人名称 |
+| 49 | **DISPUTE_CREATE_TIME** | DATE | Y |  | 争议日期首次设置-创建时间 |
+| 50 | **DISPUTE_UPDATE_BY** | VARCHAR2(64) | Y |  | 争议日期变更-更新人 |
+| 51 | **DISPUTE_UPDATE_BY_NAME** | VARCHAR2(64) | Y |  | 争议日期变更-更新人名称 |
+| 52 | **DISPUTE_UPDATE_TIME** | DATE | Y |  | 争议日期变更-更新时间 |
+| 53 | **TERMINATION_CREATE_BY** | VARCHAR2(64) | Y |  | 终止日期首次设置-创建人 |
+| 54 | **TERMINATION_CREATE_BY_NAME** | VARCHAR2(64) | Y |  | 终止日期首次设置-创建人名称 |
+| 55 | **TERMINATION_CREATE_TIME** | DATE | Y |  | 终止日期首次设置-创建时间 |
+| 56 | **TERMINATION_UPDATE_BY** | VARCHAR2(64) | Y |  | 终止日期变更-更新人 |
+| 57 | **TERMINATION_UPDATE_BY_NAME** | VARCHAR2(64) | Y |  | 终止日期变更-更新人名称 |
+| 58 | **TERMINATION_UPDATE_TIME** | DATE | Y |  | 终止日期变更-更新时间 |
 
 <details><summary>公共字段（BaseDomain，所有表一致）</summary>
 

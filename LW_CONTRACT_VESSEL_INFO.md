@@ -14,7 +14,7 @@
 | # | 字段 | 类型 | 可空 | 默认 | 说明 |
 |---|------|------|:--:|------|------|
 | 1 | **ID** 🔑PK | VARCHAR2(32) | N |  | 主键 |
-| 2 | **CONTRACT_ID** ⬅外键 | VARCHAR2(32) | Y |  | 劳务经营合同ID(LW_CONTRACT.ID) |
+| 2 | **CONTRACT_ID** | VARCHAR2(32) | Y |  | 劳务经营合同ID(LW_CONTRACT.ID) |
 | 3 | **VESSEL_CODE** | VARCHAR2(20) | Y |  | 船舶代码 |
 | 4 | **VESSEL_NAME** | VARCHAR2(50) | Y |  | 船舶名称 |
 | 5 | **PRINCIPAL_CODE** | VARCHAR2(20) | Y |  | 主结算单位 |
