@@ -1,12 +1,13 @@
-# LW_CONTRACT_VESSEL_INFO（劳务经营合同-船舶子表）
+# LW_CONTRACT_VESSEL_INFO（劳务经营合同-船舶子表(挂标准下，标准与船舶一对多)）
 
-> 主键：**ID**　|　业务字段 5 个，公共字段 10 个（BaseDomain）
+> 主键：**ID**　|　业务字段 6 个，公共字段 10 个（BaseDomain）
 
 ## 索引
 
 | 索引名 | 字段 |
 |--------|------|
 | IDX_LW_CVI_CONTRACT | `CONTRACT_ID, IS_VOID` |
+| IDX_LW_CVI_STANDARD | `STANDARD_ID` |
 | IDX_LW_CVI_VESSEL | `VESSEL_CODE` |
 
 ## 业务字段
@@ -15,9 +16,10 @@
 |---|------|------|:--:|------|------|
 | 1 | **ID** 🔑PK | VARCHAR2(32) | N |  | 主键 |
 | 2 | **CONTRACT_ID** | VARCHAR2(32) | Y |  | 劳务经营合同ID(LW_CONTRACT.ID) |
-| 3 | **VESSEL_CODE** | VARCHAR2(20) | Y |  | 船舶代码 |
-| 4 | **VESSEL_NAME** | VARCHAR2(50) | Y |  | 船舶名称 |
-| 5 | **PRINCIPAL_CODE** | VARCHAR2(20) | Y |  | 主结算单位 |
+| 3 | **STANDARD_ID** | VARCHAR2(32) | Y |  | 标准子表ID(LW_CONTRACT_STANDARD.ID) |
+| 4 | **VESSEL_CODE** | VARCHAR2(20) | Y |  | 船舶代码 |
+| 5 | **VESSEL_NAME** | VARCHAR2(50) | Y |  | 船舶名称 |
+| 6 | **PRINCIPAL_CODE** | VARCHAR2(20) | Y |  | 主结算单位 |
 
 <details><summary>公共字段（BaseDomain，所有表一致）</summary>
 
