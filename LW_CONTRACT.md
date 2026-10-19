@@ -37,7 +37,7 @@
 | 22 | **RELIEVE_DATE** | DATE | Y |  | 解除日期 |
 | 23 | **DISPUTE_DATE** | DATE | Y |  | 争议日期 |
 | 24 | **DISPUTE_CASE** | VARCHAR2(1000) | Y |  | 争议情况 |
-| 25 | **SETTLE_AMOUNT** | NUMBER(18 | Y |  | 合同结算额 |
+| 25 | **SETTLE_AMOUNT** | NUMBER(18,2) | Y |  | 合同结算额 |
 | 26 | **CURRENCY_CODE** | VARCHAR2(20) | Y |  | 结算币种(字典 CURRENCY) |
 | 27 | **SETTLE_TYPE** | VARCHAR2(20) | Y |  | 结算类型(FIXED_30-月固定天数(30) ACTUAL-月实际天数) |
 | 28 | **SIGNED_CREATE_BY** | VARCHAR2(64) | Y |  | 签署日期首次设置-创建人 |

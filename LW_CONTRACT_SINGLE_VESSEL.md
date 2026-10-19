@@ -21,7 +21,7 @@
 | 5 | **VESSEL_CODE** | VARCHAR2(20) | Y |  | 船舶代码 |
 | 6 | **VESSEL_NAME** | VARCHAR2(50) | Y |  | 船舶名称 |
 | 7 | **START_DATE** | DATE | Y |  | 生效日期 |
-| 8 | **MONTHLY_AGREEMENT_FEE** | NUMBER(18 | Y |  | 月度单船协议费用 |
+| 8 | **MONTHLY_AGREEMENT_FEE** | NUMBER(18,2) | Y |  | 月度单船协议费用 |
 | 9 | **REMARK** | VARCHAR2(500) | Y |  | 备注 |
 
 <details><summary>公共字段（BaseDomain，所有表一致）</summary>

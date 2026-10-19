@@ -25,16 +25,16 @@
 | 9 | **POSITION_NAME** | VARCHAR2(50) | Y |  | 职务名称 |
 | 10 | **IS_NEW_METHOD** | NUMBER(1) | Y |  | 新人新办法(0-否 1-是) |
 | 11 | **IS_FOREIGN** | NUMBER(1) | Y |  | 是否外籍(0-否 1-是) |
-| 12 | **BASE_SALARY** | NUMBER(18 | Y |  | 基薪(船员薪水) |
-| 13 | **TRAVEL_SALARY** | NUMBER(18 | Y |  | 路途薪(出入境工资) |
-| 14 | **LEAVE_ASSESS_BONUS** | NUMBER(18 | Y |  | 离船考核奖(完成合同奖) |
-| 15 | **SUPPLIER_RETURN_BONUS** | NUMBER(18 | Y |  | 供方老手返船奖(船员回流奖) |
-| 16 | **AGENCY_FEE** | NUMBER(18 | Y |  | 代理费 |
-| 17 | **MANAGEMENT_FEE** | NUMBER(18 | Y |  | 管理费 |
-| 18 | **ASSEMBLY_FEE** | NUMBER(18 | Y |  | 集结包干费 |
-| 19 | **UNIFORM_FEE** | NUMBER(18 | Y |  | 制服费(劳保费) |
-| 20 | **TRAINING_FEE** | NUMBER(18 | Y |  | 培训费 |
-| 21 | **FOOD_FEE** | NUMBER(18 | Y |  | 伙食费 |
+| 12 | **BASE_SALARY** | NUMBER(18,2) | Y |  | 基薪(船员薪水) |
+| 13 | **TRAVEL_SALARY** | NUMBER(18,2) | Y |  | 路途薪(出入境工资) |
+| 14 | **LEAVE_ASSESS_BONUS** | NUMBER(18,2) | Y |  | 离船考核奖(完成合同奖) |
+| 15 | **SUPPLIER_RETURN_BONUS** | NUMBER(18,2) | Y |  | 供方老手返船奖(船员回流奖) |
+| 16 | **AGENCY_FEE** | NUMBER(18,2) | Y |  | 代理费 |
+| 17 | **MANAGEMENT_FEE** | NUMBER(18,2) | Y |  | 管理费 |
+| 18 | **ASSEMBLY_FEE** | NUMBER(18,2) | Y |  | 集结包干费 |
+| 19 | **UNIFORM_FEE** | NUMBER(18,2) | Y |  | 制服费(劳保费) |
+| 20 | **TRAINING_FEE** | NUMBER(18,2) | Y |  | 培训费 |
+| 21 | **FOOD_FEE** | NUMBER(18,2) | Y |  | 伙食费 |
 | 22 | **REMARK** | VARCHAR2(500) | Y |  | 备注 |
 
 <details><summary>公共字段（BaseDomain，所有表一致）</summary>

@@ -1,6 +1,6 @@
 # 劳务经营合同模块（LW_CONTRACT）数据字典
 
-> 来源：`sms-crew-server/src/main/resources/sql/lw/lw_contract_ddl.sql` + `lw_contract_dict.sql`（Oracle DDL，2026-10-16 版）
+> 来源：`sms-crew-server/src/main/resources/sql/lw/` 下 `lw_contract_ddl.sql` + `lw_contract_dict.sql` + `lw_contract_adjustment.sql` + `lw_special_mark.sql`（Oracle DDL，2026-10-19 版，含 2026-10-16 调补维护改版与船员特殊标记）
 > 金额字段统一 `NUMBER(18,2)`；是否类字段统一 `NUMBER(1)`；所有表含 BaseDomain 公共字段（OFFICE_CODE / CREATE_BY / CREATE_BY_NAME / CREATE_TIME / UPDATE_BY / UPDATE_BY_NAME / UPDATE_TIME / LOC_TIME_ZONE / IS_VOID / VERSION）。
 
 ## 表清单
@@ -12,6 +12,8 @@
 | `LW_CONTRACT_VESSEL_INFO` | 劳务经营合同-船舶子表(挂标准下，标准与船舶一对多) | ID | 6 | [LW_CONTRACT_VESSEL_INFO.md](LW_CONTRACT_VESSEL_INFO.md) |
 | `LW_CONTRACT_SINGLE_VESSEL` | 劳务经营合同-单船协议标准子表 | ID | 9 | [LW_CONTRACT_SINGLE_VESSEL.md](LW_CONTRACT_SINGLE_VESSEL.md) |
 | `LW_CONTRACT_SINGLE_POST` | 劳务经营合同-单岗协议标准子表 | ID | 22 | [LW_CONTRACT_SINGLE_POST.md](LW_CONTRACT_SINGLE_POST.md) |
+| `LW_CONTRACT_ADJUSTMENT` | 调补维护（无固定核算标准的费用手工录入） | ID | 13 | [LW_CONTRACT_ADJUSTMENT.md](LW_CONTRACT_ADJUSTMENT.md) |
+| `LW_SPECIAL_MARK` | 船员特殊标记（特殊维护页面） | ID | 10 | [LW_SPECIAL_MARK.md](LW_SPECIAL_MARK.md) |
 
 ## 表关系
 
@@ -25,6 +27,13 @@
 | LW_CONTRACT_VESSEL_INFO | LW_CONTRACT_SINGLE_POST | VESSEL_INFO_ID | 1:N | 明细冗余关联船舶子表，便于按船过滤 |
 
 > 明细表（SINGLE_VESSEL / SINGLE_POST）同时冗余 CONTRACT_ID 与 VESSEL_CODE / VESSEL_NAME，均建立索引；删除走 IS_VOID 软删。
+
+### 独立维护表（无合同外键）
+
+| 表 | 说明 | 关联方式 |
+|----|------|---------|
+| `LW_CONTRACT_ADJUSTMENT` | 调补维护（2026-10-16 改版重建）：无固定核算标准的费用手工/导入录入，一行一笔金额+年/月+项目 | 按船代码 / 工号关联船舶、船员主数据 |
+| `LW_SPECIAL_MARK` | 船员特殊标记：按船按人维护起止日期内的特殊标记 | 按船代码 / 工号关联船舶、船员主数据 |
 
 ### ER 图
 
@@ -53,6 +62,27 @@ erDiagram
     LW_CONTRACT_SINGLE_POST { string CONTRACT_ID FK }
     LW_CONTRACT_SINGLE_POST { string STANDARD_ID FK }
     LW_CONTRACT_SINGLE_POST { string VESSEL_INFO_ID FK }
+    LW_CONTRACT_ADJUSTMENT { string ID PK }
+    LW_CONTRACT_ADJUSTMENT { string ADJUST_YEAR }
+    LW_CONTRACT_ADJUSTMENT { string ADJUST_MONTH }
+    LW_CONTRACT_ADJUSTMENT { string EMP_NO }
+    LW_CONTRACT_ADJUSTMENT { string EMP_NAME }
+    LW_CONTRACT_ADJUSTMENT { string POSITION_CODE }
+    LW_CONTRACT_ADJUSTMENT { string VESSEL_CODE }
+    LW_CONTRACT_ADJUSTMENT { string FEE_TYPE }
+    LW_CONTRACT_ADJUSTMENT { string PROJECT_CODE }
+    LW_CONTRACT_ADJUSTMENT { string CURRENCY_CODE }
+    LW_CONTRACT_ADJUSTMENT { string AMOUNT }
+    LW_CONTRACT_ADJUSTMENT { string IMPORT_BATCH }
+    LW_SPECIAL_MARK { string ID PK }
+    LW_SPECIAL_MARK { string VESSEL_CODE }
+    LW_SPECIAL_MARK { string EMP_NO }
+    LW_SPECIAL_MARK { string EMP_NAME }
+    LW_SPECIAL_MARK { string POSITION_CODE }
+    LW_SPECIAL_MARK { string START_DATE }
+    LW_SPECIAL_MARK { string END_DATE }
+    LW_SPECIAL_MARK { string SPECIAL_MARK }
+    LW_SPECIAL_MARK { string IMPORT_BATCH_NO }
 ```
 
 ### 层级结构
@@ -65,6 +95,10 @@ LW_CONTRACT 劳务经营合同主表
     │   └── ← SINGLE_POST.VESSEL_INFO_ID
     ├── LW_CONTRACT_SINGLE_VESSEL 单船协议标准明细（协议方式=单船时）
     └── LW_CONTRACT_SINGLE_POST   单岗协议标准明细（协议方式=单岗时）
+
+独立维护表（不挂合同外键）：
+├── LW_CONTRACT_ADJUSTMENT 调补维护（一行一笔金额+年/月+项目，手工/导入维护）
+└── LW_SPECIAL_MARK 船员特殊标记（按船按人维护起止日期内标记，手工/导入维护）
 ```
 
 ## 业务要点
@@ -75,9 +109,11 @@ LW_CONTRACT 劳务经营合同主表
 - **香港公司项目**：`LW_CONTRACT_STANDARD.HK_PROJECT_CODES` 存字典 `LW_HK_PROJECT` 编码，多个以英文逗号分隔。
 - **结算类型**：主表 `SETTLE_TYPE`（FIXED_30-月固定天数(30) / ACTUAL-月实际天数），字典 `LW_SETTLE_TYPE`。
 - **关键日期审计**：主表对 签署(SIGNED_)/生效(EFFICIENT_)/解除(LIFTED_)/争议(DISPUTE_)/终止(TERMINATION_) 五类日期分别记录 首次设置(CREATE_*) 与 变更(UPDATE_*) 的人与时间。
+- **调补维护（LW_CONTRACT_ADJUSTMENT，2026-10-16 改版重建）**：无固定核算标准的费用手工/导入录入；由「一行 9 个金额列」改为「一行一笔金额 + 年/月 + 项目」；`FEE_TYPE` 字典 `LW_ADJUST_FEE_TYPE`（1-调补项目→`PROJECT_CODE` 取 `LW_APPOINT_TO`，2-其他项目→取 `LW_OTHER`，按 FEE_TYPE 联动）；`AMOUNT` 金额、`CURRENCY_CODE` 币种（字典 `CURRENCY`）；`IMPORT_BATCH` 导入批次号（yyyyMMddHHmmss），支持按批次批量删除。
+- **船员特殊标记（LW_SPECIAL_MARK，2026-10-16 新增）**：按船代码+工号维护起止日期（`END_DATE` 为空表示长期有效）内的 `SPECIAL_MARK`，字典 `BUSINESS_CONTRACT_MARK`（1-船东派员/2-出入境/3-船员重叠/4-增岗/5-减岗）；`IMPORT_BATCH_NO` 导入批次号支持批量删除。
 - **软删与乐观锁**：所有表 `IS_VOID`（0-否 1-是）软删除，`VERSION` 乐观锁版本号。
 
-## 字典（lw_contract_dict.sql）
+## 字典（lw_contract_dict.sql + lw_contract_adjustment.sql）
 
 ### LW_SETTLE_TYPE 结算类型
 
@@ -116,11 +152,59 @@ LW_CONTRACT 劳务经营合同主表
 | TRAINING_FEE | 培训费 | 10 |
 | FOOD_FEE | 伙食费 | 11 |
 
+### BUSINESS_CONTRACT_MARK 业务合同特殊标记
+
+| 编码 | 名称 | 排序 |
+|------|------|:--:|
+| 1 | 船东派员 | 1 |
+| 2 | 出入境 | 2 |
+| 3 | 重叠船员 | 3 |
+| 4 | 增岗 | 4 |
+| 5 | 减岗 | 5 |
+
+### LW_ADJUST_FEE_TYPE 协议费用项目(调补费用类型)
+
+| 编码 | 名称 | 排序 |
+|------|------|:--:|
+| 1 | 调补项目 | 1 |
+| 2 | 其他项目 | 2 |
+
+### LW_APPOINT_TO 项目-指定给(调补项目费用项)
+
+| 编码 | 名称 | 排序 |
+|------|------|:--:|
+| BASE_SALARY | 基薪 | 1 |
+| TRAVEL_SALARY | 路途薪 | 2 |
+| LEAVE_ASSESS_BONUS | 离船考核奖 | 3 |
+| AGENCY_FEE | 代理费 | 4 |
+| MANAGEMENT_FEE | 管理费 | 5 |
+| ASSEMBLY_FEE | 集结包干费 | 6 |
+| UNIFORM_FEE | 制服费 | 7 |
+| TRAINING_FEE | 培训费 | 8 |
+| OVERDUE_SUBSIDY | 超期补贴 | 9 |
+| GF_RETURN_BONUS | 供方老手返船奖 | 10 |
+| FOOD_FEE | 伙食费 | 11 |
+
+### LW_OTHER 项目-其他项目费用项
+
+| 编码 | 名称 | 排序 |
+|------|------|:--:|
+| WAITING_WAGE | 候船工资 | 1 |
+| LABOR_FEE | 劳务费 | 2 |
+| CREW_INSUR_CLAIM | 船员保赔款 | 3 |
+| CERT_EXPENSES | 外籍证书费 | 4 |
+| VISA_FEE | 签证费 | 5 |
+| ADVANCE_FEE | 代垫款 | 6 |
+| SHIP_OWNER_DEDUCTION | 船东扣款 | 7 |
+| ACCIDENT_INSURE | 意外险 | 8 |
+| AGREEMENT_FEE_DIFF | 协议费用补差 | 9 |
+
 ### 引用的系统外部字典
 
 | 字典 | 使用位置 |
 |------|---------|
+| BUSINESS_CONTRACT_MARK | LW_SPECIAL_MARK.SPECIAL_MARK（特殊标记） |
 | CONTRACT_CHARACTER | LW_CONTRACT.CONTRACT_CHARACTER（合同性质） |
 | CONTRACT_TEXT_TYPE | LW_CONTRACT.CONTRACT_TEXT_TYPE（合同文本类型） |
-| CURRENCY | LW_CONTRACT 币种字段 |
+| CURRENCY | LW_CONTRACT / LW_CONTRACT_STANDARD / LW_CONTRACT_ADJUSTMENT 币种字段 |
 | EXTENSION_CLAUSE | LW_CONTRACT.EXTENSION_CLAUSE（延期条款） |
