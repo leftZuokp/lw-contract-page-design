@@ -2,6 +2,16 @@
 
 > 主键：**ID**　|　业务字段 13 个，公共字段 10 个（BaseDomain）
 
+## 索引
+
+| 索引名 | 字段 |
+|--------|------|
+| IDX_LCA_YM | `ADJUST_YEAR, ADJUST_MONTH, IS_VOID` |
+| IDX_LCA_EMP | `EMP_NO, IS_VOID` |
+| IDX_LCA_VESSEL | `VESSEL_CODE, IS_VOID` |
+| IDX_LCA_PROJECT | `PROJECT_CODE, IS_VOID` |
+| IDX_LCA_BATCH | `IMPORT_BATCH, IS_VOID` |
+
 ## 业务字段
 
 | # | 字段 | 类型 | 可空 | 默认 | 说明 |

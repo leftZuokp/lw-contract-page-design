@@ -1,6 +1,6 @@
 # LW_CONTRACT_SINGLE_VESSEL（劳务经营合同-单船协议标准子表）
 
-> 主键：**ID**　|　业务字段 9 个，公共字段 10 个（BaseDomain）
+> 主键：**ID**　|　业务字段 6 个，公共字段 10 个（BaseDomain）
 
 ## 索引
 
@@ -8,7 +8,6 @@
 |--------|------|
 | IDX_LW_CSV_CONTRACT | `CONTRACT_ID, IS_VOID` |
 | IDX_LW_CSV_STANDARD | `STANDARD_ID` |
-| IDX_LW_CSV_INFO | `VESSEL_INFO_ID` |
 
 ## 业务字段
 
@@ -17,12 +16,9 @@
 | 1 | **ID** 🔑PK | VARCHAR2(32) | N |  | 主键 |
 | 2 | **CONTRACT_ID** | VARCHAR2(32) | Y |  | 劳务经营合同ID(LW_CONTRACT.ID) |
 | 3 | **STANDARD_ID** | VARCHAR2(32) | Y |  | 标准子表ID(LW_CONTRACT_STANDARD.ID) |
-| 4 | **VESSEL_INFO_ID** | VARCHAR2(32) | Y |  | 船舶子表ID(LW_CONTRACT_VESSEL_INFO.ID) |
-| 5 | **VESSEL_CODE** | VARCHAR2(20) | Y |  | 船舶代码 |
-| 6 | **VESSEL_NAME** | VARCHAR2(50) | Y |  | 船舶名称 |
-| 7 | **START_DATE** | DATE | Y |  | 生效日期 |
-| 8 | **MONTHLY_AGREEMENT_FEE** | NUMBER(18,2) | Y |  | 月度单船协议费用 |
-| 9 | **REMARK** | VARCHAR2(500) | Y |  | 备注 |
+| 4 | **START_DATE** | DATE | Y |  | 生效日期 |
+| 5 | **MONTHLY_AGREEMENT_FEE** | NUMBER(18,2) | Y |  | 月度单船协议费用 |
+| 6 | **REMARK** | VARCHAR2(500) | Y |  | 备注 |
 
 <details><summary>公共字段（BaseDomain，所有表一致）</summary>
 

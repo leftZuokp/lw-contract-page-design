@@ -2,6 +2,15 @@
 
 > 主键：**ID**　|　业务字段 10 个，公共字段 10 个（BaseDomain）
 
+## 索引
+
+| 索引名 | 字段 |
+|--------|------|
+| IDX_LSM_EMP | `EMP_NO, START_DATE` |
+| IDX_LSM_VESSEL | `VESSEL_CODE, IS_VOID` |
+| IDX_LSM_MARK | `IS_VOID, SPECIAL_MARK` |
+| IDX_LSM_BATCH | `IMPORT_BATCH_NO, IS_VOID` |
+
 ## 业务字段
 
 | # | 字段 | 类型 | 可空 | 默认 | 说明 |
